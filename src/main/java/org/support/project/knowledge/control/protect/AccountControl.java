@@ -126,8 +126,12 @@ public class AccountControl extends Control {
             if (user == null) {
                 return sendError(HttpStatus.SC_400_BAD_REQUEST, "user is allready removed.");
             }
+            // LDAPユーザでもメールアドレスだけは変更できるようにする
             if (user.getAuthLdap() != null && user.getAuthLdap().intValue() == INT_FLAG.ON.getValue()) {
-                return sendError(HttpStatus.SC_400_BAD_REQUEST, "can not edit ldap user.");
+                if (StringUtils.isEmailAddress(getParam("mailAddress"))) {
+                    user.setMailAddress(getParam("mailAddress"));
+                }
+//                return sendError(HttpStatus.SC_400_BAD_REQUEST, "can not edit ldap user.");
             }
             if (userAddType.getConfigValue().equals(SystemConfig.USER_ADD_TYPE_VALUE_ADMIN)) {
                 // ユーザ登録を管理者が行っている場合、メールアドレスは変更出来ない（変更用の画面も使えない）
@@ -142,14 +146,18 @@ public class AccountControl extends Control {
                 user.setUserKey(getParam("userKey"));
             }
             user.setUserName(getParam("userName"));
-            if (!StringUtils.isEmpty(getParam("password"))) {
-                user.setPassword(getParam("password"));
-                user.setEncrypted(false);
-            }
-            if (StringUtils.isEmpty(user.getMailAddress())) {
-                if (StringUtils.isEmailAddress(user.getUserKey())) {
-                    user.setMailAddress(user.getUserKey());
-                }
+            
+            // LDAPユーザでもメールアドレスだけは更新できるようにするため、パスワードはLDAPユーザでない場合のみ更新する
+            if (user.getAuthLdap() != null && user.getAuthLdap().intValue() != INT_FLAG.ON.getValue()) {
+            	if (!StringUtils.isEmpty(getParam("password"))) {
+            		user.setPassword(getParam("password"));
+            		user.setEncrypted(false);
+            	}
+            	if (StringUtils.isEmpty(user.getMailAddress())) {
+            		if (StringUtils.isEmailAddress(user.getUserKey())) {
+            			user.setMailAddress(user.getUserKey());
+            		}
+            	}
             }
             dao.update(user);
         }
