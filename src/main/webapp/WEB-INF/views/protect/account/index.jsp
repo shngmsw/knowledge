@@ -78,7 +78,7 @@
             <div class="form-group">
                 <label for="userKey"><%= jspUtil.label("knowledge.auth.label.mail") %><%= jspUtil.label("knowledge.account.info.mail") %></label>
                 <input type="text" class="form-control" name="mailAddress" id="mailAddress" placeholder="<%= jspUtil.label("knowledge.auth.label.mail") %>"
-                    value="<%= jspUtil.out("mailAddress") %>" readonly="readonly" />
+                    value="<%= jspUtil.out("mailAddress") %>" />
             </div>
             <div class="form-group">
                 <label for="userName"><%= jspUtil.label("knowledge.signup.label.name") %></label>
@@ -119,9 +119,7 @@
                 </p>
             </div>
 
-<% if (!jspUtil.is(1, "authLdap")) { %>
             <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;<%= jspUtil.label("label.update") %></button>
-<% } %>
             <a href="<%= request.getContextPath()%>/protect.account/withdrawal" class="btn btn-default">
             <i class="fa fa-remove"></i>&nbsp;<%= jspUtil.label("label.withdrawal")%></a>
             
